@@ -41,6 +41,12 @@ Mermaid diagrams are available under `docs/diagrams`:
 - [Class diagram](docs/diagrams/class-diagram.md): major app-owned classes and relationships
 - [Dependency injection flow](docs/diagrams/dependency-injection.md): Hilt graph, bindings, and feature factory map
 
+## Contributor Docs
+
+- [CI Pipeline](docs/ci.md): GitHub Actions checks, required secrets, and uploaded reports
+- [Libraries](docs/libraries.md): dependency list, purpose of each library, and version management
+- [Testing Guide](docs/testing.md): test structure, examples, and coverage scope
+
 ## Modules
 
 ```text
@@ -68,10 +74,6 @@ PortfolioMovies/
 ├── settings.gradle.kts          # Module registration
 └── gradle.properties
 ```
-
-## Libraries
-
-See [Libraries](docs/libraries.md) for the dependency list, purpose of each library, and where versions are managed.
 
 ## TMDB API Key
 
