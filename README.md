@@ -105,6 +105,14 @@ Run all checks:
 ./gradlew check
 ```
 
+Run the same build, test, and coverage checks used by CI:
+
+```bash
+./gradlew testDebugUnitTest jacocoDebugCoverageVerification :app:assembleDebug
+```
+
+See [CI Pipeline](docs/ci.md) for local CI instructions, reports, and troubleshooting.
+
 ## Tests
 
 For collaborator guidance and examples, see the [Testing Guide](docs/testing.md).
