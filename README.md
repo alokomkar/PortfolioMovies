@@ -32,6 +32,15 @@ Key choices:
 - Core modules hold shared contracts, models, networking, persistence, design-system UI, and test utilities.
 - Feature screens are registered into the shell with Hilt multibindings through `FeatureScreenFactory`.
 
+## Diagrams
+
+Mermaid diagrams are available under `docs/diagrams`:
+
+- [Architecture diagram](docs/diagrams/architecture.md): module relationships and boundaries
+- [Code flow diagrams](docs/diagrams/code-flow.md): startup, list loading, detail, and favorites flows
+- [Class diagram](docs/diagrams/class-diagram.md): major app-owned classes and relationships
+- [Dependency injection flow](docs/diagrams/dependency-injection.md): Hilt graph, bindings, and feature factory map
+
 ## Modules
 
 ```text
