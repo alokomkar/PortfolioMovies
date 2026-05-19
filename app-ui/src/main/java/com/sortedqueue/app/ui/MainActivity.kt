@@ -1,6 +1,7 @@
 package com.sortedqueue.app.ui
 
 import android.os.Bundle
+import androidx.activity.compose.BackHandler
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -53,6 +54,10 @@ fun PortfolioMoviesApp(
     var selectedTab by rememberSaveable { mutableStateOf(FeatureTab.Movies) }
     var selectedMedia by remember { mutableStateOf<MediaSummary?>(null) }
     val detailTab = selectedMedia?.type?.toFeatureTab()
+
+    BackHandler(enabled = selectedMedia != null) {
+        selectedMedia = null
+    }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),

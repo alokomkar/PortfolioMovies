@@ -2,6 +2,7 @@ package com.sortedqueue.portfolio.core.network.di
 
 import com.sortedqueue.portfolio.core.network.BuildConfig
 import com.sortedqueue.portfolio.core.network.TmdbApi
+import com.sortedqueue.portfolio.core.network.TmdbAuthorizationInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -27,6 +28,7 @@ object NetworkModule {
         }
 
         return OkHttpClient.Builder()
+            .addInterceptor(TmdbAuthorizationInterceptor(BuildConfig.TMDB_ACCESS_TOKEN))
             .addInterceptor(loggingInterceptor)
             .build()
     }

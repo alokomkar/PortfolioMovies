@@ -13,7 +13,10 @@ val localProperties = Properties().apply {
     }
 }
 
-val tmdbApiKey = localProperties.getProperty("TMDB_API_KEY", "")
+val tmdbAccessToken = localProperties.getProperty(
+    "TMDB_ACCESS_TOKEN",
+    localProperties.getProperty("TMDB_API_KEY", "")
+)
 
 android {
     namespace = "com.sortedqueue.portfolio.core.network"
@@ -29,7 +32,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
         buildConfigField("String", "TMDB_BASE_URL", "\"https://api.themoviedb.org/3/\"")
-        buildConfigField("String", "TMDB_API_KEY", "\"$tmdbApiKey\"")
+        buildConfigField("String", "TMDB_ACCESS_TOKEN", "\"$tmdbAccessToken\"")
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11

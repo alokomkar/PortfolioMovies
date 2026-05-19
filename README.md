@@ -75,15 +75,15 @@ PortfolioMovies/
 └── gradle.properties
 ```
 
-## TMDB API Key
+## TMDB Access Token
 
 Create or update `local.properties` with:
 
 ```properties
-TMDB_API_KEY=your_tmdb_api_key_here
+TMDB_ACCESS_TOKEN=your_tmdb_access_token_here
 ```
 
-`local.properties` is ignored by Git. The key is read by `:core:network` and exposed to the app through generated `BuildConfig` fields.
+`local.properties` is ignored by Git. The access token is read by `:core:network`, exposed through generated `BuildConfig` fields, and sent as a TMDB bearer token in the `Authorization` header.
 
 ## Build And Run
 
@@ -193,4 +193,4 @@ Ignored files include:
 - Android Studio workspace files under `.idea/`
 - `.gradle`, `.kotlin`, `.cxx`, and other generated artifacts
 
-Do not commit the TMDB API key or generated build outputs.
+Do not commit the TMDB access token or generated build outputs.

@@ -40,7 +40,7 @@ You can run the same checks locally before opening a PR or pushing to `main`.
 First, make sure `local.properties` exists at the project root:
 
 ```properties
-TMDB_API_KEY=your_tmdb_api_key_here
+TMDB_ACCESS_TOKEN=your_tmdb_access_token_here
 ```
 
 Then run the same commands used by GitHub Actions:
@@ -103,7 +103,7 @@ core/database/build/reports/tests/testDebugUnitTest/index.html
 
 ## Local Troubleshooting
 
-- If Gradle cannot find the TMDB key, confirm `local.properties` exists and contains `TMDB_API_KEY`.
+- If Gradle cannot find the TMDB access token, confirm `local.properties` exists and contains `TMDB_ACCESS_TOKEN`.
 - If coverage verification fails, open the Jacoco HTML report and inspect missed instructions or branches.
 - If a module test fails, open that module's `testDebugUnitTest` HTML report.
 - If dependencies fail to resolve, rerun with a stable network connection because Gradle may need to download artifacts.
@@ -111,11 +111,11 @@ core/database/build/reports/tests/testDebugUnitTest/index.html
 
 ## Required Secret
 
-Add the TMDB API key as a GitHub Actions repository secret:
+Add the TMDB access token as a GitHub Actions repository secret:
 
 ```text
-Name: TMDB_API_KEY
-Value: your_tmdb_api_key
+Name: TMDB_ACCESS_TOKEN
+Value: your_tmdb_access_token
 ```
 
 GitHub location:
@@ -127,10 +127,10 @@ Repository -> Settings -> Secrets and variables -> Actions -> New repository sec
 The workflow writes this value into `local.properties` during CI:
 
 ```properties
-TMDB_API_KEY=<secret value>
+TMDB_ACCESS_TOKEN=<secret value>
 ```
 
-Do not commit `local.properties` or the API key.
+Do not commit `local.properties` or the access token.
 
 ## Reports
 

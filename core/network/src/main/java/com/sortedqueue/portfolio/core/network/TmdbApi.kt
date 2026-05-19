@@ -2,25 +2,22 @@ package com.sortedqueue.portfolio.core.network
 
 import retrofit2.http.GET
 import retrofit2.http.Path
-import retrofit2.http.Query
 
 interface TmdbApi {
     @GET("movie/popular")
-    suspend fun popularMovies(@Query("api_key") apiKey: String = BuildConfig.TMDB_API_KEY): TmdbPagedResponse<TmdbMovieDto>
+    suspend fun popularMovies(): TmdbPagedResponse<TmdbMovieDto>
 
     @GET("tv/popular")
-    suspend fun popularTvShows(@Query("api_key") apiKey: String = BuildConfig.TMDB_API_KEY): TmdbPagedResponse<TmdbTvShowDto>
+    suspend fun popularTvShows(): TmdbPagedResponse<TmdbTvShowDto>
 
     @GET("movie/{movie_id}")
     suspend fun movieDetails(
-        @Path("movie_id") movieId: Int,
-        @Query("api_key") apiKey: String = BuildConfig.TMDB_API_KEY
+        @Path("movie_id") movieId: Int
     ): TmdbMovieDetailDto
 
     @GET("tv/{series_id}")
     suspend fun tvShowDetails(
-        @Path("series_id") tvShowId: Int,
-        @Query("api_key") apiKey: String = BuildConfig.TMDB_API_KEY
+        @Path("series_id") tvShowId: Int
     ): TmdbTvShowDetailDto
 }
 

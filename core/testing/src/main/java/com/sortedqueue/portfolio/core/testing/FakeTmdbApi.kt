@@ -17,19 +17,19 @@ class FakeTmdbApi : TmdbApi {
     var movieDetailsResult: Result<TmdbMovieDetailDto> = Result.failure(IllegalStateException("No movie detail configured"))
     var tvShowDetailsResult: Result<TmdbTvShowDetailDto> = Result.failure(IllegalStateException("No TV detail configured"))
 
-    override suspend fun popularMovies(apiKey: String): TmdbPagedResponse<TmdbMovieDto> {
+    override suspend fun popularMovies(): TmdbPagedResponse<TmdbMovieDto> {
         return popularMoviesResult.getOrThrow()
     }
 
-    override suspend fun popularTvShows(apiKey: String): TmdbPagedResponse<TmdbTvShowDto> {
+    override suspend fun popularTvShows(): TmdbPagedResponse<TmdbTvShowDto> {
         return popularTvShowsResult.getOrThrow()
     }
 
-    override suspend fun movieDetails(movieId: Int, apiKey: String): TmdbMovieDetailDto {
+    override suspend fun movieDetails(movieId: Int): TmdbMovieDetailDto {
         return movieDetailsResult.getOrThrow()
     }
 
-    override suspend fun tvShowDetails(tvShowId: Int, apiKey: String): TmdbTvShowDetailDto {
+    override suspend fun tvShowDetails(tvShowId: Int): TmdbTvShowDetailDto {
         return tvShowDetailsResult.getOrThrow()
     }
 }
