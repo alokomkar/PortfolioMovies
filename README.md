@@ -129,6 +129,12 @@ Run the merged Jacoco report:
 ./gradlew jacocoDebugReport
 ```
 
+Run a module-specific Jacoco report:
+
+```bash
+./gradlew :feature:movies:impl:jacocoDebugModuleReport
+```
+
 Run the merged Jacoco report and enforce the 90% instruction coverage gate:
 
 ```bash

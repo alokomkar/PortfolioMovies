@@ -16,6 +16,18 @@ Generate the merged Jacoco report:
 ./gradlew jacocoDebugReport
 ```
 
+Generate Jacoco reports for every module:
+
+```bash
+./gradlew jacocoDebugModuleReports
+```
+
+Generate a Jacoco report for one module:
+
+```bash
+./gradlew :feature:movies:impl:jacocoDebugModuleReport
+```
+
 Generate the report and enforce the 90% instruction coverage gate:
 
 ```bash
@@ -27,6 +39,22 @@ Open the HTML report at:
 ```text
 build/reports/jacoco/jacocoDebugReport/html/index.html
 ```
+
+Module-specific HTML reports are generated at:
+
+```text
+<module>/build/reports/jacoco/jacocoDebugModuleReport/html/index.html
+```
+
+For example:
+
+```text
+feature/movies/impl/build/reports/jacoco/jacocoDebugModuleReport/html/index.html
+feature/tv/impl/build/reports/jacoco/jacocoDebugModuleReport/html/index.html
+core/database/build/reports/jacoco/jacocoDebugModuleReport/html/index.html
+```
+
+Modules with no debug classes after coverage exclusions, such as some API-only modules, may skip report generation.
 
 ## Where Tests Live
 
@@ -129,7 +157,7 @@ collectionJob.cancel()
 
 ## Coverage Scope
 
-The merged Jacoco report excludes generated Android/Hilt/Room artifacts, Compose rendering functions, screen factories, theme wrappers, and shared test fakes. The coverage gate is meant to track app-owned production logic:
+The merged and module-specific Jacoco reports exclude generated Android/Hilt/Room artifacts, Compose rendering functions, screen factories, theme wrappers, and shared test fakes. The coverage gate is meant to track app-owned production logic:
 
 - ViewModels
 - Repositories
@@ -141,4 +169,10 @@ If new production logic lands in a module, add a focused unit test in the same m
 
 ```bash
 ./gradlew jacocoDebugCoverageVerification
+```
+
+If you only need feedback for the module you changed, run that module's report first:
+
+```bash
+./gradlew :feature:movies:impl:jacocoDebugModuleReport
 ```

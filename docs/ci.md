@@ -59,6 +59,18 @@ For a single local command that mirrors the CI job, run:
 
 If this command passes locally, the GitHub Actions workflow should pass for the same commit.
 
+To inspect coverage for a single module while iterating, run that module's Jacoco task:
+
+```bash
+./gradlew :feature:movies:impl:jacocoDebugModuleReport
+```
+
+To generate reports for all modules:
+
+```bash
+./gradlew jacocoDebugModuleReports
+```
+
 ## Local Reports
 
 After running local CI checks, reports are available at:
@@ -66,6 +78,14 @@ After running local CI checks, reports are available at:
 ```text
 build/reports/jacoco/jacocoDebugReport/html/index.html
 ```
+
+Individual module Jacoco reports are available at:
+
+```text
+<module>/build/reports/jacoco/jacocoDebugModuleReport/html/index.html
+```
+
+Modules with no debug classes after coverage exclusions may skip report generation.
 
 Module unit test reports are available under:
 

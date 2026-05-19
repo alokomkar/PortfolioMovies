@@ -22,17 +22,6 @@ jacoco {
     toolVersion = "0.8.13"
 }
 
-subprojects {
-    apply(plugin = "jacoco")
-
-    tasks.withType<Test>().configureEach {
-        extensions.configure<JacocoTaskExtension> {
-            isIncludeNoLocationClasses = true
-            excludes = listOf("jdk.internal.*")
-        }
-    }
-}
-
 val coverageExclusions = listOf(
     "**/R.class",
     "**/R$*.class",
@@ -61,6 +50,60 @@ val coverageExclusions = listOf(
     "**/dagger/hilt/**"
 )
 
+subprojects {
+    apply(plugin = "jacoco")
+
+    tasks.withType<Test>().configureEach {
+        extensions.configure<JacocoTaskExtension> {
+            isIncludeNoLocationClasses = true
+            excludes = listOf("jdk.internal.*")
+        }
+    }
+
+    tasks.register<JacocoReport>("jacocoDebugModuleReport") {
+        group = "verification"
+        description = "Runs this module's debug unit tests and generates a Jacoco coverage report."
+
+        dependsOn("testDebugUnitTest")
+
+        reports {
+            xml.required.set(true)
+            html.required.set(true)
+            csv.required.set(false)
+            xml.outputLocation.set(layout.buildDirectory.file("reports/jacoco/jacocoDebugModuleReport/jacocoDebugModuleReport.xml"))
+            html.outputLocation.set(layout.buildDirectory.dir("reports/jacoco/jacocoDebugModuleReport/html"))
+        }
+
+        classDirectories.setFrom(
+            files(
+                fileTree(layout.buildDirectory.dir("intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes")) {
+                    exclude(coverageExclusions)
+                },
+                fileTree(layout.buildDirectory.dir("intermediates/javac/debug/compileDebugJavaWithJavac/classes")) {
+                    exclude(coverageExclusions)
+                },
+                fileTree(layout.buildDirectory.dir("tmp/kotlin-classes/debug")) {
+                    exclude(coverageExclusions)
+                }
+            )
+        )
+        sourceDirectories.setFrom(
+            files(
+                "$projectDir/src/main/java",
+                "$projectDir/src/main/kotlin"
+            )
+        )
+        executionData.setFrom(
+            fileTree(projectDir) {
+                include(
+                    "build/jacoco/testDebugUnitTest.exec",
+                    "build/outputs/unit_test_code_coverage/debugUnitTest/testDebugUnitTest.exec"
+                )
+            }
+        )
+    }
+}
+
 fun coverageClassDirectories() = files(
     subprojects.filter { it.buildFile.exists() }.flatMap { project ->
         listOf(
@@ -77,11 +120,24 @@ fun coverageClassDirectories() = files(
     }
 )
 
-fun coverageExecutionData() = fileTree(rootDir) {
-    include(
-        "**/build/jacoco/testDebugUnitTest.exec",
-        "**/build/outputs/unit_test_code_coverage/debugUnitTest/testDebugUnitTest.exec"
-    )
+fun coverageExecutionData() = files(
+    subprojects.filter { it.buildFile.exists() }.flatMap { project ->
+        listOf(
+            project.fileTree(project.projectDir) {
+                include("build/jacoco/testDebugUnitTest.exec")
+            },
+            project.fileTree(project.projectDir) {
+                include("build/outputs/unit_test_code_coverage/debugUnitTest/testDebugUnitTest.exec")
+            }
+        )
+    }
+)
+
+tasks.register("jacocoDebugModuleReports") {
+    group = "verification"
+    description = "Runs debug unit tests and generates Jacoco coverage reports for each module."
+
+    dependsOn(subprojects.filter { it.buildFile.exists() }.map { "${it.path}:jacocoDebugModuleReport" })
 }
 
 tasks.register<JacocoReport>("jacocoDebugReport") {
