@@ -13,10 +13,7 @@ val localProperties = Properties().apply {
     }
 }
 
-val tmdbAccessToken = localProperties.getProperty(
-    "TMDB_ACCESS_TOKEN",
-    localProperties.getProperty("TMDB_API_KEY", "")
-)
+val tmdbAccessToken = localProperties.getProperty("TMDB_ACCESS_TOKEN", "")
 
 android {
     namespace = "com.sortedqueue.portfolio.core.network"
