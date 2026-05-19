@@ -12,6 +12,12 @@ Portfolio Movies is a modular Android app built with Jetpack Compose. It uses th
 - MVVM presentation layer with Hilt-injected ViewModels
 - Project-wide Jacoco unit test coverage report
 
+## App Recording
+
+<video src="docs/assets/recordings/demo.webm" controls width="320"></video>
+
+[Watch the demo recording](docs/assets/recordings/demo.webm)
+
 ## Architecture
 
 The app follows MVVM with a multi-module structure.
