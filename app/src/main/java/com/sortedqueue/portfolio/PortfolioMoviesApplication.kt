@@ -1,5 +1,7 @@
 package com.sortedqueue.portfolio
 
 import android.app.Application
+import dagger.hilt.android.HiltAndroidApp
 
-class PortfolioMoviesApplication: Application()
+@HiltAndroidApp
+class PortfolioMoviesApplication : Application()

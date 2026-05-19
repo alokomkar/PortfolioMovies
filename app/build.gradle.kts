@@ -1,6 +1,11 @@
 plugins {
+    // 1. Core build configurations (Must be first)
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+
+    // 2. Code processors (Must be last)
+    id("com.google.devtools.ksp")
+    alias(libs.plugins.hilt.android)
 }
 
 android {
@@ -63,4 +68,8 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
+
+    // Hilt Core
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
 }

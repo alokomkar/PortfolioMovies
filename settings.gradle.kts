@@ -26,6 +26,8 @@ rootProject.name = "Portfolio Movies"
 include(":app")
 include(":core:network")
 include(":core:designsystem")
+include(":core:database")
+include(":core:model")
 include(":core:testing")
 include(":feature:movies:api")
 include(":feature:movies:impl")
