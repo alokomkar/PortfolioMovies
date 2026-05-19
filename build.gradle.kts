@@ -1,6 +1,7 @@
 import org.gradle.api.tasks.testing.Test
 import org.gradle.testing.jacoco.plugins.JacocoTaskExtension
 import org.gradle.testing.jacoco.tasks.JacocoReport
+import org.gradle.testing.jacoco.tasks.JacocoCoverageVerification
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
@@ -32,6 +33,57 @@ subprojects {
     }
 }
 
+val coverageExclusions = listOf(
+    "**/R.class",
+    "**/R$*.class",
+    "**/BuildConfig.*",
+    "**/Manifest*.*",
+    "**/*Application*.*",
+    "**/*Activity*.*",
+    "**/*Module*.*",
+    "**/*_Factory*.*",
+    "**/*_MembersInjector*.*",
+    "**/*_Impl*.*",
+    "**/*ScreenKt*.*",
+    "**/*ScreenFactoryImpl*.*",
+    "**/FeatureScreenFactory*.*",
+    "**/FeatureScreenKey*.*",
+    "**/FeatureTab*.*",
+    "**/MediaUiKt*.*",
+    "**/ThemeKt*.*",
+    "**/ColorKt*.*",
+    "**/TypeKt*.*",
+    "**/TmdbApi\$DefaultImpls*.*",
+    "**/PortfolioMoviesDatabase*.*",
+    "**/core/testing/**",
+    "**/Hilt_*.*",
+    "**/hilt_aggregated_deps/**",
+    "**/dagger/hilt/**"
+)
+
+fun coverageClassDirectories() = files(
+    subprojects.filter { it.buildFile.exists() }.flatMap { project ->
+        listOf(
+            fileTree(project.layout.buildDirectory.dir("intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes")) {
+                exclude(coverageExclusions)
+            },
+            fileTree(project.layout.buildDirectory.dir("intermediates/javac/debug/compileDebugJavaWithJavac/classes")) {
+                exclude(coverageExclusions)
+            },
+            fileTree(project.layout.buildDirectory.dir("tmp/kotlin-classes/debug")) {
+                exclude(coverageExclusions)
+            }
+        )
+    }
+)
+
+fun coverageExecutionData() = fileTree(rootDir) {
+    include(
+        "**/build/jacoco/testDebugUnitTest.exec",
+        "**/build/outputs/unit_test_code_coverage/debugUnitTest/testDebugUnitTest.exec"
+    )
+}
+
 tasks.register<JacocoReport>("jacocoDebugReport") {
     group = "verification"
     description = "Runs debug unit tests and generates a merged Jacoco coverage report."
@@ -48,39 +100,7 @@ tasks.register<JacocoReport>("jacocoDebugReport") {
         html.outputLocation.set(layout.buildDirectory.dir("reports/jacoco/jacocoDebugReport/html"))
     }
 
-    val coverageExclusions = listOf(
-        "**/R.class",
-        "**/R$*.class",
-        "**/BuildConfig.*",
-        "**/Manifest*.*",
-        "**/*Application*.*",
-        "**/*Activity*.*",
-        "**/*Module*.*",
-        "**/*_Factory*.*",
-        "**/*_MembersInjector*.*",
-        "**/*_Impl*.*",
-        "**/Hilt_*.*",
-        "**/hilt_aggregated_deps/**",
-        "**/dagger/hilt/**"
-    )
-
-    classDirectories.setFrom(
-        files(
-            reportProjects.flatMap { project ->
-                listOf(
-                    fileTree(project.layout.buildDirectory.dir("intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes")) {
-                        exclude(coverageExclusions)
-                    },
-                    fileTree(project.layout.buildDirectory.dir("intermediates/javac/debug/compileDebugJavaWithJavac/classes")) {
-                        exclude(coverageExclusions)
-                    },
-                    fileTree(project.layout.buildDirectory.dir("tmp/kotlin-classes/debug")) {
-                        exclude(coverageExclusions)
-                    }
-                )
-            }
-        )
-    )
+    classDirectories.setFrom(coverageClassDirectories())
     sourceDirectories.setFrom(
         files(
             reportProjects.flatMap { project ->
@@ -91,12 +111,35 @@ tasks.register<JacocoReport>("jacocoDebugReport") {
             }
         )
     )
-    executionData.setFrom(
-        fileTree(rootDir) {
-            include(
-                "**/build/jacoco/testDebugUnitTest.exec",
-                "**/build/outputs/unit_test_code_coverage/debugUnitTest/testDebugUnitTest.exec"
-            )
-        }
+    executionData.setFrom(coverageExecutionData())
+}
+
+tasks.register<JacocoCoverageVerification>("jacocoDebugCoverageVerification") {
+    group = "verification"
+    description = "Verifies merged debug unit test coverage is at least 90%."
+
+    dependsOn("jacocoDebugReport")
+
+    classDirectories.setFrom(coverageClassDirectories())
+    sourceDirectories.setFrom(
+        files(
+            subprojects.filter { it.buildFile.exists() }.flatMap { project ->
+                listOf(
+                    "${project.projectDir}/src/main/java",
+                    "${project.projectDir}/src/main/kotlin"
+                )
+            }
+        )
     )
+    executionData.setFrom(coverageExecutionData())
+
+    violationRules {
+        rule {
+            limit {
+                counter = "INSTRUCTION"
+                value = "COVEREDRATIO"
+                minimum = "0.90".toBigDecimal()
+            }
+        }
+    }
 }

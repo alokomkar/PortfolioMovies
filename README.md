@@ -119,6 +119,8 @@ Run all checks:
 
 ## Tests
 
+For collaborator guidance and examples, see the [Testing Guide](docs/testing.md).
+
 Run all debug unit tests:
 
 ```bash
@@ -129,6 +131,12 @@ Run the merged Jacoco report:
 
 ```bash
 ./gradlew jacocoDebugReport
+```
+
+Run the merged Jacoco report and enforce the 90% instruction coverage gate:
+
+```bash
+./gradlew jacocoDebugCoverageVerification
 ```
 
 Open the HTML report:
@@ -148,19 +156,16 @@ build/reports/jacoco/jacocoDebugReport/jacocoDebugReport.xml
 Latest generated with:
 
 ```bash
-./gradlew jacocoDebugReport
+./gradlew jacocoDebugCoverageVerification
 ```
 
 ```text
-Instruction coverage: 35.15% (2491/7086)
-Branch coverage:      10.40% (57/548)
-Line coverage:        50.15% (338/674)
-Complexity coverage:  33.33% (165/495)
-Method coverage:      69.83% (162/232)
-Class coverage:       73.33% (44/60)
+Instruction coverage: 92.19% (2527/2741)
+Branch coverage:      79.03% (98/124)
+Line coverage:        96.99% (322/332)
 ```
 
-Coverage intentionally excludes common generated Android/Hilt/Room artifacts such as `R`, `BuildConfig`, `*_Factory`, `*_Impl`, `Hilt_*`, and aggregated Hilt dependency classes.
+Coverage intentionally excludes generated Android/Hilt/Room artifacts, Compose rendering functions, screen factories, theme wrappers, and shared test fakes so the gate focuses on production business logic, mappers, repositories, and ViewModels.
 
 ## Test Coverage Scope
 
@@ -168,9 +173,11 @@ Current tests cover:
 
 - Favorites repository mapping and favorite/unfavorite behavior
 - Movies list ViewModel success and error states
-- Movie detail ViewModel mapping and favorite state
-- TV list ViewModel success state and favorite toggling
-- TV detail ViewModel mapping and favorite state
+- Movie DTO-to-domain mapping, detail state, error state, and favorite state
+- Movie favorite and unfavorite branches, duplicate detail-load guard, and fallback error messages
+- TV list ViewModel success and error states with favorite toggling
+- TV DTO-to-domain mapping, detail state, error state, and favorite state
+- TV favorite and unfavorite branches, duplicate detail-load guard, and fallback error messages
 - Favorites ViewModel observation and removal flow
 
 Shared test utilities live in `:core:testing`.
