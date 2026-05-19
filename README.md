@@ -49,8 +49,10 @@ Mermaid diagrams are available under `docs/diagrams`:
 
 ## Contributor Docs
 
+- [Architecture Decision Records](docs/adr/README.md): rationale for the major architecture choices
 - [CI Pipeline](docs/ci.md): GitHub Actions checks, required secrets, and uploaded reports
 - [Libraries](docs/libraries.md): dependency list, purpose of each library, and version management
+- [Production Readiness](docs/production-readiness.md): current strengths, known limits, and next investments
 - [Testing Guide](docs/testing.md): test structure, examples, and coverage scope
 
 ## Modules

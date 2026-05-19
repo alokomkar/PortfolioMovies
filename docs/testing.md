@@ -54,7 +54,7 @@ feature/tv/impl/build/reports/jacoco/jacocoDebugModuleReport/html/index.html
 core/database/build/reports/jacoco/jacocoDebugModuleReport/html/index.html
 ```
 
-Modules with no debug classes after coverage exclusions, such as some API-only modules, may skip report generation.
+Modules with no debug classes after coverage exclusions may skip report generation.
 
 ## Where Tests Live
 
