@@ -71,21 +71,7 @@ PortfolioMovies/
 
 ## Libraries
 
-- Jetpack Compose: declarative UI
-- Material 3: Compose UI components
-- AndroidX Activity Compose: Compose activity integration
-- AndroidX Lifecycle ViewModel Compose: ViewModel integration for Compose
-- AndroidX Lifecycle Runtime Compose: lifecycle-aware state collection
-- Hilt: dependency injection
-- AndroidX Hilt Navigation Compose: Hilt ViewModel access from Compose
-- Retrofit: TMDB HTTP API client
-- OkHttp: HTTP transport and logging
-- Gson converter for Retrofit: JSON parsing
-- Room: local favorites persistence
-- Coil Compose: image loading for TMDB posters/backdrops
-- Kotlin Coroutines Test: ViewModel/coroutine unit tests
-- JUnit 4: unit test framework
-- Jacoco: JVM unit test coverage reports
+See [Libraries](docs/libraries.md) for the dependency list, purpose of each library, and where versions are managed.
 
 ## TMDB API Key
 
