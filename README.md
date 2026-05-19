@@ -61,13 +61,10 @@ PortfolioMovies/
 │   └── testing/                 # Test fakes and coroutine test rule
 ├── feature/
 │   ├── favorites/
-│   │   ├── api/                 # Favorites feature API boundary
 │   │   └── impl/                # Favorites screen and ViewModel
 │   ├── movies/
-│   │   ├── api/                 # Movies feature API boundary
 │   │   └── impl/                # Movies list/detail screens and ViewModels
 │   └── tv/
-│       ├── api/                 # TV feature API boundary
 │       └── impl/                # TV list/detail screens and ViewModels
 ├── gradle/                      # Gradle wrapper and version catalog
 ├── build.gradle.kts             # Root plugins and Jacoco report task

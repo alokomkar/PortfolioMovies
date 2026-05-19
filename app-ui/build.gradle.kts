@@ -33,11 +33,6 @@ dependencies {
     implementation(project(":core:designsystem"))
     implementation(project(":core:model"))
 
-    // 2. STABLE CONTRACTS ONLY (Zero ':impl' modules allowed here)
-    implementation(project(":feature:movies:api"))
-    implementation(project(":feature:tv:api"))
-    implementation(project(":feature:favorites:api"))
-
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.hilt.navigation.compose)

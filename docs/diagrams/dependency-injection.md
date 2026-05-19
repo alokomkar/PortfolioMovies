@@ -67,11 +67,11 @@ flowchart TD
 
 ## Why The App Module Depends On Feature Implementations
 
-`:app-ui` only needs the feature API contracts and shared `FeatureScreenFactory` type. The final `:app` module depends on each feature implementation so Hilt can discover and aggregate:
+`:app-ui` only needs shared contracts from `:core:designsystem` and models from `:core:model`. The final `:app` module depends on each feature implementation so Hilt can discover and aggregate:
 
 - `MovieScreenModule`
 - `TvScreenModule`
 - `FavoritesScreenModule`
 - all `@HiltViewModel` classes in feature modules
 
-This keeps the shell decoupled while still allowing the final application graph to include all feature bindings.
+This keeps the shell decoupled from feature internals while still allowing the final application graph to include all feature bindings.

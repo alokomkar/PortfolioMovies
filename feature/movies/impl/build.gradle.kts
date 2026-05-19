@@ -29,9 +29,6 @@ android {
 }
 
 dependencies {
-    // Link the movies API contract
-    implementation(project(":feature:movies:api"))
-
     // Core dependencies this implementation will need
     implementation(project(":core:database"))
     implementation(project(":core:designsystem"))

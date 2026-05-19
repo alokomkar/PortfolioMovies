@@ -29,9 +29,6 @@ android {
 }
 
 dependencies {
-    // Link the tv API contract
-    implementation(project(":feature:tv:api"))
-
     // Core dependencies this implementation will need
     implementation(project(":core:database"))
     implementation(project(":core:designsystem"))

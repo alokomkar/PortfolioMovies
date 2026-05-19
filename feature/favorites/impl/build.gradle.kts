@@ -29,9 +29,6 @@ android {
 }
 
 dependencies {
-    // Link the favorites API contract
-    implementation(project(":feature:favorites:api"))
-
     // Core dependencies this implementation will need
     implementation(project(":core:database"))
     implementation(project(":core:designsystem"))
