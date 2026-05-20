@@ -14,9 +14,9 @@ Portfolio Movies is a modular Android app built with Jetpack Compose. It uses th
 
 ## App Recording
 
-<video src="docs/assets/recordings/demo.webm" controls width="320"></video>
+<video src="docs/assets/recordings/demo.mp4" controls width="320"></video>
 
-[Watch the demo recording](docs/assets/recordings/demo.webm)
+[Watch the demo recording](docs/assets/recordings/demo.mp4)
 
 ## Architecture
 
