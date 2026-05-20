@@ -7,6 +7,7 @@ This project is a portfolio app, but it is structured to show how the same codeb
 - Modular MVVM architecture with clear app, feature, and core ownership.
 - Hilt dependency injection with feature registration through multibindings.
 - Retrofit and OkHttp network layer with bearer-token authentication.
+- Tolerant gzip handling for TMDB responses before Retrofit JSON parsing.
 - Room-backed favorites persistence.
 - Unit tests for repositories, mappers, ViewModels, and network auth behavior.
 - Jacoco coverage verification with a 90% instruction coverage gate.
@@ -66,4 +67,3 @@ Before merging larger changes, contributors should also consider:
 - Add Detekt or ktlint to CI.
 - Add database migration tests before schema changes.
 - Add more connected UI tests for empty, error, and favorite flows.
-

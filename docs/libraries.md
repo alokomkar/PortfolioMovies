@@ -31,6 +31,11 @@ Project dependency versions are centralized in `gradle/libs.versions.toml`. Modu
 - Retrofit Gson Converter: JSON response parsing.
 - OkHttp: HTTP client used by Retrofit.
 - OkHttp Logging Interceptor: debug HTTP request/response logging.
+- Chucker: debug-only on-device HTTP inspector for OkHttp traffic.
+- Flipper: debug-only desktop inspection hook for app debugging.
+- SoLoader: native loader required when initializing Flipper in debug builds.
+
+The network layer also includes a small `TolerantGzipInterceptor` because TMDB responses can trigger Okio's strict gzip stream validation. The interceptor explicitly requests gzip, decompresses with `GZIPInputStream`, removes gzip headers, and gives Retrofit a normal JSON body.
 
 ## Persistence
 

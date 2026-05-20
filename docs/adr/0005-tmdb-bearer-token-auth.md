@@ -18,9 +18,12 @@ Authorization: Bearer <TMDB_ACCESS_TOKEN>
 
 Do not pass `api_key` query parameters from Retrofit service methods.
 
+TMDB responses are also passed through a network-layer `TolerantGzipInterceptor`. It requests gzip explicitly, decompresses with `GZIPInputStream`, strips gzip headers, and passes normal JSON to Retrofit. This avoids surfacing Okio's strict `gzip finished without exhausting source` error to the UI for otherwise readable TMDB responses.
+
 ## Consequences
 
 - Auth behavior is centralized in the network layer.
+- Gzip handling is centralized before Retrofit/Gson parse the response.
 - Retrofit API declarations stay focused on endpoints and path parameters.
 - CI can provide the token through a GitHub Actions secret named `TMDB_ACCESS_TOKEN`.
 - The access token is still a build-time secret, so release-grade apps should use a backend or stronger secret-management strategy.
@@ -29,4 +32,3 @@ Do not pass `api_key` query parameters from Retrofit service methods.
 
 - Add release signing and secret-management documentation if this project is prepared for distribution.
 - Consider an authenticated backend proxy for production use cases where API tokens must never ship in the app binary.
-

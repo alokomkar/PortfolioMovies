@@ -68,6 +68,9 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
+    debugImplementation(project(":core:network"))
+    debugImplementation(libs.flipper)
+    debugImplementation(libs.soloader)
 
     // Hilt Core
     implementation(libs.hilt.android)

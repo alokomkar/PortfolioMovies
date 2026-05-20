@@ -1,10 +1,14 @@
 package com.sortedqueue.portfolio.core.network.di
 
+import android.content.Context
 import com.sortedqueue.portfolio.core.network.BuildConfig
+import com.sortedqueue.portfolio.core.network.debug.NetworkDebugTools
 import com.sortedqueue.portfolio.core.network.TmdbApi
 import com.sortedqueue.portfolio.core.network.TmdbAuthorizationInterceptor
+import com.sortedqueue.portfolio.core.network.TolerantGzipInterceptor
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
@@ -18,7 +22,9 @@ import javax.inject.Singleton
 object NetworkModule {
     @Provides
     @Singleton
-    fun provideOkHttpClient(): OkHttpClient {
+    fun provideOkHttpClient(
+        @ApplicationContext context: Context
+    ): OkHttpClient {
         val loggingInterceptor = HttpLoggingInterceptor().apply {
             level = if (BuildConfig.DEBUG) {
                 HttpLoggingInterceptor.Level.BASIC
@@ -27,9 +33,14 @@ object NetworkModule {
             }
         }
 
-        return OkHttpClient.Builder()
+        val builder = OkHttpClient.Builder()
             .addInterceptor(TmdbAuthorizationInterceptor(BuildConfig.TMDB_ACCESS_TOKEN))
+
+        NetworkDebugTools.addDebugInterceptors(builder, context)
+
+        return builder
             .addInterceptor(loggingInterceptor)
+            .addInterceptor(TolerantGzipInterceptor())
             .build()
     }
 
