@@ -10,9 +10,7 @@ internal object AppDebugTools {
         SoLoader.init(application, false)
 
         if (FlipperUtils.shouldEnableFlipper(application)) {
-            AndroidFlipperClient.getInstance(application).apply {
-                start()
-            }
+            AndroidFlipperClient.getInstance(application).start()
         }
     }
 }
