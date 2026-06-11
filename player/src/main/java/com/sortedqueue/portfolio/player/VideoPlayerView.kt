@@ -125,7 +125,12 @@ fun VideoPlayerView(
                         onClick = { state.playPrevious() },
                         enabled = state.currentItemIndex > 0
                     ) {
-                        Text("⏮", color = if (state.currentItemIndex > 0) Color.White else Color.DarkGray, style = MaterialTheme.typography.titleLarge)
+                        val color = if (state.currentItemIndex > 0) Color.White else Color.DarkGray
+                        Text(
+                            text = "⏮",
+                            color = color,
+                            style = MaterialTheme.typography.titleLarge
+                        )
                     }
 
                     // Rewind -10s
@@ -164,7 +169,16 @@ fun VideoPlayerView(
                         onClick = { state.playNext() },
                         enabled = state.currentItemIndex < state.playlist.lastIndex
                     ) {
-                        Text("⏭", color = if (state.currentItemIndex < state.playlist.lastIndex) Color.White else Color.DarkGray, style = MaterialTheme.typography.titleLarge)
+                        val color = if (state.currentItemIndex < state.playlist.lastIndex) {
+                            Color.White
+                        } else {
+                            Color.DarkGray
+                        }
+                        Text(
+                            text = "⏭",
+                            color = color,
+                            style = MaterialTheme.typography.titleLarge
+                        )
                     }
                 }
             }
