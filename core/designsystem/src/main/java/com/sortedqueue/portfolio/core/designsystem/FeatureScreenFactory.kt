@@ -4,6 +4,8 @@ import androidx.compose.runtime.Composable
 import com.sortedqueue.portfolio.core.model.MediaSummary
 import dagger.MapKey
 
+import androidx.compose.runtime.Stable
+
 enum class FeatureTab {
     Movies,
     Tv,
@@ -13,6 +15,7 @@ enum class FeatureTab {
 @MapKey
 annotation class FeatureScreenKey(val value: FeatureTab)
 
+@Stable
 interface FeatureScreenFactory {
     @Composable
     fun RenderScreen(onMediaSelected: (MediaSummary) -> Unit)

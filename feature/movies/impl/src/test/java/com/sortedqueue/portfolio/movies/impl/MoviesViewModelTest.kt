@@ -6,8 +6,11 @@ import com.sortedqueue.portfolio.core.network.TmdbGenreDto
 import com.sortedqueue.portfolio.core.network.TmdbMovieDetailDto
 import com.sortedqueue.portfolio.core.network.TmdbMovieDto
 import com.sortedqueue.portfolio.core.network.TmdbPagedResponse
+import com.sortedqueue.portfolio.core.network.TmdbVideosResponse
+import com.sortedqueue.portfolio.core.network.TmdbVideoDto
 import com.sortedqueue.portfolio.core.testing.FakeFavoritesDao
 import com.sortedqueue.portfolio.core.testing.FakeTmdbApi
+import com.sortedqueue.portfolio.core.network.YoutubeStreamResolver
 import com.sortedqueue.portfolio.core.testing.MainDispatcherRule
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -96,7 +99,7 @@ class MoviesViewModelTest {
             )
         }
         val repository = FavoritesRepository(FakeFavoritesDao())
-        val viewModel = MovieDetailViewModel(api, repository)
+        val viewModel = MovieDetailViewModel(api, repository, YoutubeStreamResolver())
 
         viewModel.loadMovie(42)
 
@@ -120,7 +123,7 @@ class MoviesViewModelTest {
         }
         val repository = FavoritesRepository(FakeFavoritesDao())
         repository.setFavorite(movieDetailDto(id = 42, title = "Arrival").toMediaDetail(), true)
-        val viewModel = MovieDetailViewModel(api, repository)
+        val viewModel = MovieDetailViewModel(api, repository, YoutubeStreamResolver())
 
         viewModel.loadMovie(42)
 
@@ -137,7 +140,7 @@ class MoviesViewModelTest {
         val api = FakeTmdbApi().apply {
             movieDetailsResult = Result.success(movieDetailDto(id = 42, title = "Arrival"))
         }
-        val viewModel = MovieDetailViewModel(api, FavoritesRepository(FakeFavoritesDao()))
+        val viewModel = MovieDetailViewModel(api, FavoritesRepository(FakeFavoritesDao()), YoutubeStreamResolver())
 
         viewModel.loadMovie(42)
         api.movieDetailsResult = Result.success(movieDetailDto(id = 43, title = "Changed"))
@@ -152,7 +155,7 @@ class MoviesViewModelTest {
         val api = FakeTmdbApi().apply {
             movieDetailsResult = Result.failure(IllegalStateException("detail unavailable"))
         }
-        val viewModel = MovieDetailViewModel(api, FavoritesRepository(FakeFavoritesDao()))
+        val viewModel = MovieDetailViewModel(api, FavoritesRepository(FakeFavoritesDao()), YoutubeStreamResolver())
 
         viewModel.loadMovie(42)
 
@@ -166,7 +169,7 @@ class MoviesViewModelTest {
         val api = FakeTmdbApi().apply {
             movieDetailsResult = Result.failure(Throwable())
         }
-        val viewModel = MovieDetailViewModel(api, FavoritesRepository(FakeFavoritesDao()))
+        val viewModel = MovieDetailViewModel(api, FavoritesRepository(FakeFavoritesDao()), YoutubeStreamResolver())
 
         viewModel.loadMovie(42)
 
@@ -176,7 +179,7 @@ class MoviesViewModelTest {
     @Test
     fun movieDetailViewModel_ignoresFavoriteToggleWhenDetailIsNotLoaded() = runTest {
         val repository = FavoritesRepository(FakeFavoritesDao())
-        val viewModel = MovieDetailViewModel(FakeTmdbApi(), repository)
+        val viewModel = MovieDetailViewModel(FakeTmdbApi(), repository, YoutubeStreamResolver())
 
         viewModel.toggleFavorite()
 
@@ -249,6 +252,55 @@ class MoviesViewModelTest {
         assertEquals("Ali", detail.toMediaDetail().title)
         assertEquals("116 min", detail.toMediaDetail().runtimeLabel)
         assertEquals(listOf("Drama"), detail.toMediaDetail().genres)
+    }
+
+    @Test
+    fun movieDetailViewModel_resolveTrailers_whenYoutubeTrailersExist_returnsYoutubeUrls() = runTest {
+        val api = FakeTmdbApi().apply {
+            movieDetailsResult = Result.success(movieDetailDto(id = 42, title = "Arrival"))
+            movieVideosResult = Result.success(
+                TmdbVideosResponse(
+                    id = 42,
+                    results = listOf(
+                        TmdbVideoDto(
+                            id = "vid-1",
+                            name = "Official Trailer",
+                            key = "O-b2VfmmbyA",
+                            site = "YouTube",
+                            size = 1080,
+                            type = "Trailer",
+                            official = true
+                        )
+                    )
+                )
+            )
+        }
+        val viewModel = MovieDetailViewModel(api, FavoritesRepository(FakeFavoritesDao()), YoutubeStreamResolver())
+        viewModel.loadMovie(42)
+
+        var resolvedPlaylist: List<com.sortedqueue.portfolio.player.VideoItem>? = null
+        viewModel.resolveTrailers { resolvedPlaylist = it }
+
+        assertEquals(1, resolvedPlaylist?.size)
+        assertEquals("https://www.youtube.com/watch?v=O-b2VfmmbyA", resolvedPlaylist?.first()?.url)
+        assertEquals("Official Trailer", resolvedPlaylist?.first()?.title)
+    }
+
+    @Test
+    fun movieDetailViewModel_resolveTrailers_whenNoTrailersExist_returnsFallbackUrl() = runTest {
+        val api = FakeTmdbApi().apply {
+            movieDetailsResult = Result.success(movieDetailDto(id = 42, title = "Arrival"))
+            movieVideosResult = Result.success(TmdbVideosResponse(id = 42, results = emptyList()))
+        }
+        val viewModel = MovieDetailViewModel(api, FavoritesRepository(FakeFavoritesDao()), YoutubeStreamResolver())
+        viewModel.loadMovie(42)
+
+        var resolvedPlaylist: List<com.sortedqueue.portfolio.player.VideoItem>? = null
+        viewModel.resolveTrailers { resolvedPlaylist = it }
+
+        assertEquals(1, resolvedPlaylist?.size)
+        assertEquals("https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4", resolvedPlaylist?.first()?.url)
+        assertTrue(resolvedPlaylist?.first()?.title?.contains("Fallback") ?: false)
     }
 }
 

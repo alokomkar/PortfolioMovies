@@ -1,0 +1,2 @@
+json_key_file("play_service_account_key.json") # Path to the google play service account json key file
+package_name("com.sortedqueue.portfolio") # The shipping package name of the application

@@ -6,6 +6,7 @@ import com.sortedqueue.portfolio.core.network.TmdbMovieDto
 import com.sortedqueue.portfolio.core.network.TmdbPagedResponse
 import com.sortedqueue.portfolio.core.network.TmdbTvShowDetailDto
 import com.sortedqueue.portfolio.core.network.TmdbTvShowDto
+import com.sortedqueue.portfolio.core.network.TmdbVideosResponse
 
 class FakeTmdbApi : TmdbApi {
     var popularMoviesResult: Result<TmdbPagedResponse<TmdbMovieDto>> = Result.success(
@@ -16,6 +17,8 @@ class FakeTmdbApi : TmdbApi {
     )
     var movieDetailsResult: Result<TmdbMovieDetailDto> = Result.failure(IllegalStateException("No movie detail configured"))
     var tvShowDetailsResult: Result<TmdbTvShowDetailDto> = Result.failure(IllegalStateException("No TV detail configured"))
+    var movieVideosResult: Result<TmdbVideosResponse> = Result.success(TmdbVideosResponse(id = 0, results = emptyList()))
+    var tvShowVideosResult: Result<TmdbVideosResponse> = Result.success(TmdbVideosResponse(id = 0, results = emptyList()))
 
     override suspend fun popularMovies(): TmdbPagedResponse<TmdbMovieDto> {
         return popularMoviesResult.getOrThrow()
@@ -31,5 +34,13 @@ class FakeTmdbApi : TmdbApi {
 
     override suspend fun tvShowDetails(tvShowId: Int): TmdbTvShowDetailDto {
         return tvShowDetailsResult.getOrThrow()
+    }
+
+    override suspend fun movieVideos(movieId: Int): TmdbVideosResponse {
+        return movieVideosResult.getOrThrow()
+    }
+
+    override suspend fun tvShowVideos(tvShowId: Int): TmdbVideosResponse {
+        return tvShowVideosResult.getOrThrow()
     }
 }

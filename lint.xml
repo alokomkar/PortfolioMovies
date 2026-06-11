@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<lint>
+    <!-- Escalate Slack Compose lints to errors to block pull requests containing unstable collections/parameters -->
+    <issue id="ComposeUnstableCollections" severity="error" />
+    <issue id="ComposeUnstableReceiver" severity="error" />
+    <issue id="ComposeMutableParameters" severity="error" />
+</lint>

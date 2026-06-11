@@ -19,6 +19,16 @@ interface TmdbApi {
     suspend fun tvShowDetails(
         @Path("series_id") tvShowId: Int
     ): TmdbTvShowDetailDto
+
+    @GET("movie/{movie_id}/videos")
+    suspend fun movieVideos(
+        @Path("movie_id") movieId: Int
+    ): TmdbVideosResponse
+
+    @GET("tv/{series_id}/videos")
+    suspend fun tvShowVideos(
+        @Path("series_id") tvShowId: Int
+    ): TmdbVideosResponse
 }
 
 data class TmdbPagedResponse<T>(
@@ -76,3 +86,19 @@ data class TmdbTvShowDetailDto(
     val number_of_seasons: Int?,
     val genres: List<TmdbGenreDto>?
 )
+
+data class TmdbVideosResponse(
+    @com.google.gson.annotations.SerializedName("id") val id: Int,
+    @com.google.gson.annotations.SerializedName("results") val results: List<TmdbVideoDto>
+)
+
+data class TmdbVideoDto(
+    @com.google.gson.annotations.SerializedName("id") val id: String,
+    @com.google.gson.annotations.SerializedName("key") val key: String,
+    @com.google.gson.annotations.SerializedName("name") val name: String?,
+    @com.google.gson.annotations.SerializedName("site") val site: String?,
+    @com.google.gson.annotations.SerializedName("size") val size: Int?,
+    @com.google.gson.annotations.SerializedName("type") val type: String?,
+    @com.google.gson.annotations.SerializedName("official") val official: Boolean?
+)
+

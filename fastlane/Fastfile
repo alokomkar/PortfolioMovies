@@ -1,0 +1,25 @@
+default_platform(:android)
+
+platform :android do
+  desc "Run all static analysis, lint, and unit test checks locally or in CI"
+  lane :verify do
+    gradle(task: "clean")
+    gradle(task: "detekt")
+    gradle(task: "testDebugUnitTest")
+    gradle(task: "jacocoDebugCoverageVerification")
+  end
+
+  desc "Build and submit a new Release APK/Bundle to Google Play Beta track"
+  lane :beta do
+    verify
+    gradle(task: "bundleRelease")
+    
+    # Upload release bundle to Google Play Store Beta Track
+    upload_to_play_store(
+      track: 'beta',
+      package_name: 'com.sortedqueue.portfolio',
+      json_key: 'play_service_account_key.json',
+      aab: 'app/build/outputs/bundle/release/app-release.aab'
+    )
+  end
+end

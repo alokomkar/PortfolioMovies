@@ -14,21 +14,20 @@ class TolerantGzipInterceptor : Interceptor {
             .build()
 
         val response = chain.proceed(request)
-        val body = response.body ?: return response
+        val body = response.body
 
-        if (!response.isGzipEncoded()) {
-            return response
+        if (body != null && response.isGzipEncoded()) {
+            val decompressedBytes = GZIPInputStream(body.byteStream()).use { gzipInputStream ->
+                gzipInputStream.readBytes()
+            }
+            return response.newBuilder()
+                .removeHeader("Content-Encoding")
+                .removeHeader("Content-Length")
+                .body(decompressedBytes.toResponseBody(body.contentType()))
+                .build()
         }
 
-        val decompressedBytes = GZIPInputStream(body.byteStream()).use { gzipInputStream ->
-            gzipInputStream.readBytes()
-        }
-
-        return response.newBuilder()
-            .removeHeader("Content-Encoding")
-            .removeHeader("Content-Length")
-            .body(decompressedBytes.toResponseBody(body.contentType()))
-            .build()
+        return response
     }
 }
 
