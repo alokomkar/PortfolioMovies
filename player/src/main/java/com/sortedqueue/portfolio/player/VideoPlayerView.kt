@@ -44,14 +44,11 @@ fun VideoPlayerView(
             .background(Color.Black)
     ) {
         // 1. Dynamic Video Renderers
-        if (youtubeId != null) {
+        if (isYoutube && youtubeId != null) {
             // Render YouTube Player inside key to recreate and release cleanly on item change
             key(youtubeId) {
                 YouTubePlayer(
                     videoId = youtubeId,
-                    onError = {
-                        state.handleYoutubeError()
-                    },
                     modifier = Modifier.fillMaxSize()
                 )
             }
@@ -214,7 +211,6 @@ fun VideoPlayerView(
 @Composable
 fun YouTubePlayer(
     videoId: String,
-    onError: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -224,23 +220,11 @@ fun YouTubePlayer(
         factory = { ctx ->
             com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView(ctx).apply {
                 enableAutomaticInitialization = false
-                val options = com.pierfrancescosoffritti.androidyoutubeplayer.core.player.options.IFramePlayerOptions.Builder()
-                    .controls(1)
-                    .origin("https://www.youtube.com")
-                    .build()
                 initialize(object : com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener() {
                     override fun onReady(youTubePlayer: com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer) {
                         youTubePlayer.loadVideo(videoId, 0f)
                     }
-
-                    override fun onError(
-                        youTubePlayer: com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer,
-                        error: com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants.PlayerError
-                    ) {
-                        android.util.Log.e("YouTubePlayer", "Error loading video $videoId: $error")
-                        onError()
-                    }
-                }, options)
+                })
                 lifecycleOwner.lifecycle.addObserver(this)
             }
         },
