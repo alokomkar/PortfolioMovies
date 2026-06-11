@@ -15,4 +15,7 @@ dependencies {
     implementation(libs.androidx.media3.exoplayer)
     implementation(libs.androidx.media3.ui)
     implementation(libs.androidx.media3.common)
+
+    // YouTube Player dependency
+    implementation(libs.android.youtube.player)
 }
