@@ -43,9 +43,11 @@ import com.sortedqueue.portfolio.core.model.MediaDetail
 import com.sortedqueue.portfolio.core.model.MediaSummary
 import com.sortedqueue.portfolio.core.model.TMDB_IMAGE_BASE_URL
 
+import kotlinx.collections.immutable.ImmutableList
+
 @Composable
 fun MediaGrid(
-    media: List<MediaSummary>,
+    media: ImmutableList<MediaSummary>,
     onMediaSelected: (MediaSummary) -> Unit,
     onFavoriteClick: (MediaSummary) -> Unit,
     modifier: Modifier = Modifier
@@ -138,8 +140,8 @@ fun MediaDetailContent(
     detail: MediaDetail,
     onBack: () -> Unit,
     onFavoriteClick: () -> Unit,
-    onPlayTrailers: (() -> Unit)? = null,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onPlayTrailers: (() -> Unit)? = null
 ) {
     Column(
         modifier = modifier

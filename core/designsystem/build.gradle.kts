@@ -3,6 +3,14 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 }
 
+composeCompiler {
+    enableStrongSkippingMode = true
+    stabilityConfigurationFile = rootProject.file("compose_stability_config.conf")
+    metricsDestination = layout.buildDirectory.dir("compose_compiler/metrics")
+    reportsDestination = layout.buildDirectory.dir("compose_compiler/reports")
+}
+
+
 android {
     namespace = "com.sortedqueue.portfolio.core.designsystem"
     compileSdk {
@@ -40,6 +48,11 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.hilt.android)
     implementation(libs.material)
+
+    // Compose stability enforcement & lints
+    lintChecks(libs.slack.compose.lints)
+    implementation(libs.kotlinx.collections.immutable)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)

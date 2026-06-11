@@ -1,6 +1,7 @@
 package com.sortedqueue.portfolio.favorites.impl
 
 import androidx.compose.runtime.Composable
+import kotlinx.collections.immutable.toImmutableList
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -49,7 +50,7 @@ fun FavoritesScreen(
         EmptyState(message = "Your favorite movies and TV shows will appear here.")
     } else {
         MediaGrid(
-            media = favorites,
+            media = favorites.toImmutableList(),
             onMediaSelected = onMediaSelected,
             onFavoriteClick = viewModel::removeFavorite
         )

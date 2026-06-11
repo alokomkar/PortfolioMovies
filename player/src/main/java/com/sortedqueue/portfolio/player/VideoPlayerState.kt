@@ -15,13 +15,14 @@ import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import kotlinx.coroutines.delay
+import kotlinx.collections.immutable.ImmutableList
 
 /**
  * State holder that encapsulates the playback operations and exposes them as observable Compose states.
  */
 class VideoPlayerState(
     val player: ExoPlayer,
-    val playlist: List<VideoItem>
+    val playlist: ImmutableList<VideoItem>
 ) {
     var currentItemIndex by mutableIntStateOf(0)
         private set
@@ -122,7 +123,7 @@ class VideoPlayerState(
  * Creates and remembers a [VideoPlayerState] instance, handling lifecycle release on dispose.
  */
 @Composable
-fun rememberVideoPlayerState(playlist: List<VideoItem>): VideoPlayerState {
+fun rememberVideoPlayerState(playlist: ImmutableList<VideoItem>): VideoPlayerState {
     val context = LocalContext.current
     val exoPlayer = remember(playlist) {
         ExoPlayer.Builder(context).build()

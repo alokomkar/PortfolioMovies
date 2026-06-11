@@ -5,6 +5,14 @@ plugins {
     alias(libs.plugins.hilt.android)
 }
 
+composeCompiler {
+    enableStrongSkippingMode = true
+    stabilityConfigurationFile = rootProject.file("compose_stability_config.conf")
+    metricsDestination = layout.buildDirectory.dir("compose_compiler/metrics")
+    reportsDestination = layout.buildDirectory.dir("compose_compiler/reports")
+}
+
+
 android {
     namespace = "com.sortedqueue.portfolio.app.ui"
     compileSdk {
@@ -47,6 +55,11 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
+
+    // Compose stability enforcement & lints
+    lintChecks(libs.slack.compose.lints)
+    implementation(libs.kotlinx.collections.immutable)
+
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)

@@ -36,6 +36,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.sortedqueue.portfolio.player.VideoItem
 import com.sortedqueue.portfolio.player.VideoPlayerScreen
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 
 
 data class MoviesUiState(
@@ -148,7 +151,7 @@ fun MoviesScreen(
         state.errorMessage != null -> ErrorState(message = state.errorMessage, onRetry = viewModel::loadMovies)
         state.movies.isEmpty() -> EmptyState(message = "No movies found.")
         else -> MediaGrid(
-            media = state.movies,
+            media = state.movies.toImmutableList(),
             onMediaSelected = onMediaSelected,
             onFavoriteClick = viewModel::toggleFavorite
         )
@@ -166,7 +169,7 @@ fun MovieDetailScreen(
     }
 
     val state = viewModel.uiState.collectAsStateWithLifecycle().value
-    var activePlaylist by remember { mutableStateOf<List<VideoItem>?>(null) }
+    var activePlaylist by remember { mutableStateOf<ImmutableList<VideoItem>?>(null) }
 
     when {
         state.isLoading -> LoadingState()
@@ -180,7 +183,7 @@ fun MovieDetailScreen(
             onBack = onBack,
             onFavoriteClick = viewModel::toggleFavorite,
             onPlayTrailers = {
-                activePlaylist = listOf(
+                activePlaylist = persistentListOf(
                     VideoItem(
                         url = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
                         title = "${state.detail.title} - Official Trailer 1",

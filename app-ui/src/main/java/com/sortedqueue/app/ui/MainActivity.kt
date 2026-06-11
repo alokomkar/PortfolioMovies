@@ -13,6 +13,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
@@ -29,6 +30,11 @@ import com.sortedqueue.portfolio.core.model.MediaType
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+@Immutable
+data class FeatureScreensMap(
+    val items: Map<FeatureTab, @JvmSuppressWildcards FeatureScreenFactory>
+)
+
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     @Inject
@@ -39,7 +45,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             PortfolioMoviesTheme {
-                PortfolioMoviesApp(featureScreens = featureScreens)
+                PortfolioMoviesApp(featureScreens = FeatureScreensMap(featureScreens))
             }
         }
     }
@@ -47,7 +53,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun PortfolioMoviesApp(
-    featureScreens: Map<FeatureTab, @JvmSuppressWildcards FeatureScreenFactory>,
+    featureScreens: FeatureScreensMap,
     modifier: Modifier = Modifier
 ) {
     val tabs = listOf(FeatureTab.Movies, FeatureTab.Tv, FeatureTab.Favorites)
@@ -79,12 +85,12 @@ fun PortfolioMoviesApp(
         Box(modifier = Modifier.padding(innerPadding)) {
             val media = selectedMedia
             if (media != null && detailTab != null) {
-                featureScreens[detailTab]?.RenderDetail(
+                featureScreens.items[detailTab]?.RenderDetail(
                     mediaId = media.id,
                     onBack = { selectedMedia = null }
                 ) ?: Text(text = "Feature unavailable: ${detailTab.label}")
             } else {
-                featureScreens[selectedTab]?.RenderScreen(
+                featureScreens.items[selectedTab]?.RenderScreen(
                     onMediaSelected = { mediaSummary ->
                         selectedMedia = mediaSummary
                     }
@@ -96,13 +102,15 @@ fun PortfolioMoviesApp(
 
 @Preview(showBackground = true)
 @Composable
-fun PortfolioMoviesAppPreview() {
+private fun PortfolioMoviesAppPreview() {
     PortfolioMoviesTheme {
         PortfolioMoviesApp(
-            featureScreens = mapOf(
-                FeatureTab.Movies to previewScreen("Movies"),
-                FeatureTab.Tv to previewScreen("TV"),
-                FeatureTab.Favorites to previewScreen("Favorites")
+            featureScreens = FeatureScreensMap(
+                mapOf(
+                    FeatureTab.Movies to previewScreen("Movies"),
+                    FeatureTab.Tv to previewScreen("TV"),
+                    FeatureTab.Favorites to previewScreen("Favorites")
+                )
             )
         )
     }

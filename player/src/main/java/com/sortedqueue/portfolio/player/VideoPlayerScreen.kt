@@ -32,19 +32,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import kotlinx.collections.immutable.ImmutableList
 
 /**
  * Screen wrapper that manages player state and renders the player alongside the interactive playlist.
  */
 @Composable
 fun VideoPlayerScreen(
-    playlist: List<VideoItem>,
+    playlist: ImmutableList<VideoItem>,
     onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     if (playlist.isEmpty()) {
         Box(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxSize()
                 .background(Color.Black),
             contentAlignment = Alignment.Center
