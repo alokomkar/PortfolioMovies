@@ -18,15 +18,20 @@ import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
 import kotlinx.coroutines.delay
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 
 /**
  * State holder that encapsulates the playback operations and exposes them as observable Compose states.
  */
 @OptIn(UnstableApi::class)
+@Suppress("TooManyFunctions")
 class VideoPlayerState(
     val player: ExoPlayer,
-    val playlist: ImmutableList<VideoItem>
+    initialPlaylist: ImmutableList<VideoItem>
 ) {
+    var playlist by mutableStateOf(initialPlaylist)
+        internal set
+
     var currentItemIndex by mutableIntStateOf(0)
         private set
 
@@ -172,6 +177,35 @@ class VideoPlayerState(
 
     fun seekToPosition(positionMs: Long) {
         player.seekTo(positionMs)
+    }
+
+    fun handleYoutubeError() {
+        if (currentItemIndex in playlist.indices) {
+            val currentItem = playlist[currentItemIndex]
+            val fallbackUri = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+            val updatedItem = currentItem.copy(
+                url = fallbackUri,
+                title = "${currentItem.title} (Fallback Stream)"
+            )
+            val updatedList = playlist.toMutableList()
+            updatedList[currentItemIndex] = updatedItem
+            playlist = updatedList.toImmutableList()
+
+            // Also replace the item in ExoPlayer so ExoPlayer plays it
+            val mediaItem = MediaItem.Builder()
+                .setUri(fallbackUri)
+                .setMediaId(fallbackUri)
+                .setMediaMetadata(
+                    MediaMetadata.Builder()
+                        .setTitle(updatedItem.title)
+                        .setSubtitle(updatedItem.subtitle)
+                        .build()
+                )
+                .build()
+            player.replaceMediaItem(currentItemIndex, mediaItem)
+            player.prepare()
+            player.play()
+        }
     }
 }
 
