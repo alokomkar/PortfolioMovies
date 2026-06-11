@@ -24,6 +24,21 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
                     sourceCompatibility = JavaVersion.VERSION_11
                     targetCompatibility = JavaVersion.VERSION_11
                 }
+
+                testOptions {
+                    managedDevices {
+                        localDevices.register("pixel6Api33") {
+                            device = "Pixel 6"
+                            apiLevel = 33
+                            systemImageSource = "aosp-atd"
+                        }
+                        localDevices.register("pixel2Api26") {
+                            device = "Pixel 2"
+                            apiLevel = 26
+                            systemImageSource = "aosp-atd"
+                        }
+                    }
+                }
             }
         }
     }

@@ -16,6 +16,7 @@ plugins {
     id("com.google.devtools.ksp") version "2.3.5" apply false
     alias(libs.plugins.hilt.android) apply false
     alias(libs.plugins.dependency.analysis)
+    alias(libs.plugins.detekt) apply false
     jacoco
 }
 
@@ -54,6 +55,13 @@ val coverageExclusions = listOf(
 subprojects {
     apply(plugin = "jacoco")
     apply(plugin = "com.autonomousapps.dependency-analysis")
+    apply(plugin = "io.gitlab.arturbosch.detekt")
+
+    configure<io.gitlab.arturbosch.detekt.extensions.DetektExtension> {
+        config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
+        buildUponDefaultConfig = true
+        parallel = true
+    }
 
     tasks.withType<Test>().configureEach {
         extensions.configure<JacocoTaskExtension> {
