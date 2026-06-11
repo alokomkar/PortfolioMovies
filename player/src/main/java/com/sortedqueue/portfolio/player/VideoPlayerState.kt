@@ -14,12 +14,15 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.annotation.OptIn
+import androidx.media3.common.util.UnstableApi
 import kotlinx.coroutines.delay
 import kotlinx.collections.immutable.ImmutableList
 
 /**
  * State holder that encapsulates the playback operations and exposes them as observable Compose states.
  */
+@OptIn(UnstableApi::class)
 class VideoPlayerState(
     val player: ExoPlayer,
     val playlist: ImmutableList<VideoItem>
@@ -68,6 +71,27 @@ class VideoPlayerState(
             override fun onPlaybackStateChanged(state: Int) {
                 playbackState = state
                 duration = player.duration.coerceAtLeast(0L)
+            }
+
+            override fun onPlayerError(error: androidx.media3.common.PlaybackException) {
+                android.util.Log.e("VideoPlayerState", "Playback error: ${error.message}", error)
+                val currentMediaItem = player.currentMediaItem
+                if (currentMediaItem != null) {
+                    val currentUri = currentMediaItem.localConfiguration?.uri?.toString() ?: ""
+                    // If the failing URI is a youtube stream, hot-swap with fallback stream
+                    if (currentUri.contains("googlevideo.com") || currentUri.contains("piped")) {
+                        val fallbackUri = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+                        val fallbackMediaItem = MediaItem.Builder()
+                            .setUri(fallbackUri)
+                            .setMediaId(fallbackUri)
+                            .setMediaMetadata(currentMediaItem.mediaMetadata)
+                            .build()
+                        val currentIndex = player.currentMediaItemIndex
+                        player.replaceMediaItem(currentIndex, fallbackMediaItem)
+                        player.prepare()
+                        player.play()
+                    }
+                }
             }
         })
     }
@@ -122,11 +146,21 @@ class VideoPlayerState(
 /**
  * Creates and remembers a [VideoPlayerState] instance, handling lifecycle release on dispose.
  */
+@OptIn(UnstableApi::class)
 @Composable
 fun rememberVideoPlayerState(playlist: ImmutableList<VideoItem>): VideoPlayerState {
     val context = LocalContext.current
     val exoPlayer = remember(playlist) {
-        ExoPlayer.Builder(context).build()
+        val httpDataSourceFactory = androidx.media3.datasource.DefaultHttpDataSource.Factory()
+            .setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+            .setAllowCrossProtocolRedirects(true)
+        
+        ExoPlayer.Builder(context)
+            .setMediaSourceFactory(
+                androidx.media3.exoplayer.source.DefaultMediaSourceFactory(context)
+                    .setDataSourceFactory(httpDataSourceFactory)
+            )
+            .build()
     }
 
     val state = remember(playlist, exoPlayer) {
