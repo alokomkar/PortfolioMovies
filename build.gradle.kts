@@ -15,6 +15,7 @@ plugins {
     // 3. Code Generation Processors (Must come after Android/Kotlin base packages)
     id("com.google.devtools.ksp") version "2.3.5" apply false
     alias(libs.plugins.hilt.android) apply false
+    alias(libs.plugins.dependency.analysis)
     jacoco
 }
 
@@ -52,6 +53,7 @@ val coverageExclusions = listOf(
 
 subprojects {
     apply(plugin = "jacoco")
+    apply(plugin = "com.autonomousapps.dependency-analysis")
 
     tasks.withType<Test>().configureEach {
         extensions.configure<JacocoTaskExtension> {

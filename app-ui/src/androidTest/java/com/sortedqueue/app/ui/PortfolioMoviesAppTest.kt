@@ -23,10 +23,12 @@ class PortfolioMoviesAppTest {
     fun systemBackReturnsFromDetailToSelectedTab() {
         composeRule.setContent {
             PortfolioMoviesApp(
-                featureScreens = mapOf(
-                    FeatureTab.Movies to moviesScreen(),
-                    FeatureTab.Tv to unavailableScreen("TV"),
-                    FeatureTab.Favorites to unavailableScreen("Favorites")
+                featureScreens = FeatureScreensMap(
+                    mapOf(
+                        FeatureTab.Movies to moviesScreen(),
+                        FeatureTab.Tv to unavailableScreen("TV"),
+                        FeatureTab.Favorites to unavailableScreen("Favorites")
+                    )
                 )
             )
         }
