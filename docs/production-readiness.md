@@ -11,6 +11,7 @@ This project is a portfolio app, but it is structured to show how the same codeb
 - Room-backed favorites persistence.
 - Unit tests for repositories, mappers, ViewModels, and network auth behavior.
 - Jacoco coverage verification with a 90% instruction coverage gate.
+- Detekt static analysis integrated into local builds and CI workflows with customized rule exemptions for Jetpack Compose and TMDB API DTO parameters.
 - GitHub Actions CI for tests, coverage, and debug APK assembly.
 - Architecture diagrams, testing guidance, library inventory, and ADRs.
 
@@ -57,13 +58,12 @@ Before merging larger changes, contributors should also consider:
 - There is no release signing or Play Store distribution setup.
 - There are no architecture boundary tests yet.
 - UI tests cover the shell back behavior, but broader Compose screen coverage can be expanded.
-- No static analysis tool such as Detekt or ktlint is currently configured.
 
 ## Recommended Next Investments
 
 - Add Paging 3 for popular Movies and TV lists.
 - Add Room-backed cache for list responses with a refresh policy.
 - Add dependency boundary checks for module rules.
-- Add Detekt or ktlint to CI.
 - Add database migration tests before schema changes.
 - Add more connected UI tests for empty, error, and favorite flows.
+
