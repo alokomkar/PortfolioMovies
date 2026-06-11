@@ -8,6 +8,7 @@ import com.sortedqueue.portfolio.core.network.TmdbMovieDto
 import com.sortedqueue.portfolio.core.network.TmdbPagedResponse
 import com.sortedqueue.portfolio.core.testing.FakeFavoritesDao
 import com.sortedqueue.portfolio.core.testing.FakeTmdbApi
+import com.sortedqueue.portfolio.core.network.YoutubeStreamResolver
 import com.sortedqueue.portfolio.core.testing.MainDispatcherRule
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -96,7 +97,7 @@ class MoviesViewModelTest {
             )
         }
         val repository = FavoritesRepository(FakeFavoritesDao())
-        val viewModel = MovieDetailViewModel(api, repository)
+        val viewModel = MovieDetailViewModel(api, repository, YoutubeStreamResolver())
 
         viewModel.loadMovie(42)
 
@@ -120,7 +121,7 @@ class MoviesViewModelTest {
         }
         val repository = FavoritesRepository(FakeFavoritesDao())
         repository.setFavorite(movieDetailDto(id = 42, title = "Arrival").toMediaDetail(), true)
-        val viewModel = MovieDetailViewModel(api, repository)
+        val viewModel = MovieDetailViewModel(api, repository, YoutubeStreamResolver())
 
         viewModel.loadMovie(42)
 
@@ -137,7 +138,7 @@ class MoviesViewModelTest {
         val api = FakeTmdbApi().apply {
             movieDetailsResult = Result.success(movieDetailDto(id = 42, title = "Arrival"))
         }
-        val viewModel = MovieDetailViewModel(api, FavoritesRepository(FakeFavoritesDao()))
+        val viewModel = MovieDetailViewModel(api, FavoritesRepository(FakeFavoritesDao()), YoutubeStreamResolver())
 
         viewModel.loadMovie(42)
         api.movieDetailsResult = Result.success(movieDetailDto(id = 43, title = "Changed"))
@@ -152,7 +153,7 @@ class MoviesViewModelTest {
         val api = FakeTmdbApi().apply {
             movieDetailsResult = Result.failure(IllegalStateException("detail unavailable"))
         }
-        val viewModel = MovieDetailViewModel(api, FavoritesRepository(FakeFavoritesDao()))
+        val viewModel = MovieDetailViewModel(api, FavoritesRepository(FakeFavoritesDao()), YoutubeStreamResolver())
 
         viewModel.loadMovie(42)
 
@@ -166,7 +167,7 @@ class MoviesViewModelTest {
         val api = FakeTmdbApi().apply {
             movieDetailsResult = Result.failure(Throwable())
         }
-        val viewModel = MovieDetailViewModel(api, FavoritesRepository(FakeFavoritesDao()))
+        val viewModel = MovieDetailViewModel(api, FavoritesRepository(FakeFavoritesDao()), YoutubeStreamResolver())
 
         viewModel.loadMovie(42)
 
@@ -176,7 +177,7 @@ class MoviesViewModelTest {
     @Test
     fun movieDetailViewModel_ignoresFavoriteToggleWhenDetailIsNotLoaded() = runTest {
         val repository = FavoritesRepository(FakeFavoritesDao())
-        val viewModel = MovieDetailViewModel(FakeTmdbApi(), repository)
+        val viewModel = MovieDetailViewModel(FakeTmdbApi(), repository, YoutubeStreamResolver())
 
         viewModel.toggleFavorite()
 

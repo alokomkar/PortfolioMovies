@@ -8,6 +8,7 @@ import com.sortedqueue.portfolio.core.network.TmdbTvShowDetailDto
 import com.sortedqueue.portfolio.core.network.TmdbTvShowDto
 import com.sortedqueue.portfolio.core.testing.FakeFavoritesDao
 import com.sortedqueue.portfolio.core.testing.FakeTmdbApi
+import com.sortedqueue.portfolio.core.network.YoutubeStreamResolver
 import com.sortedqueue.portfolio.core.testing.MainDispatcherRule
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -95,7 +96,7 @@ class TvViewModelTest {
             )
         }
         val repository = FavoritesRepository(FakeFavoritesDao())
-        val viewModel = TvDetailViewModel(api, repository)
+        val viewModel = TvDetailViewModel(api, repository, YoutubeStreamResolver())
 
         viewModel.loadShow(31)
 
@@ -118,7 +119,7 @@ class TvViewModelTest {
         }
         val repository = FavoritesRepository(FakeFavoritesDao())
         repository.setFavorite(tvDetailDto(id = 31, name = "Slow Horses").toMediaDetail(), true)
-        val viewModel = TvDetailViewModel(api, repository)
+        val viewModel = TvDetailViewModel(api, repository, YoutubeStreamResolver())
 
         viewModel.loadShow(31)
 
@@ -135,7 +136,7 @@ class TvViewModelTest {
         val api = FakeTmdbApi().apply {
             tvShowDetailsResult = Result.success(tvDetailDto(id = 31, name = "Slow Horses"))
         }
-        val viewModel = TvDetailViewModel(api, FavoritesRepository(FakeFavoritesDao()))
+        val viewModel = TvDetailViewModel(api, FavoritesRepository(FakeFavoritesDao()), YoutubeStreamResolver())
 
         viewModel.loadShow(31)
         api.tvShowDetailsResult = Result.success(tvDetailDto(id = 32, name = "Changed"))
@@ -172,7 +173,7 @@ class TvViewModelTest {
         val api = FakeTmdbApi().apply {
             tvShowDetailsResult = Result.failure(IllegalStateException("detail unavailable"))
         }
-        val viewModel = TvDetailViewModel(api, FavoritesRepository(FakeFavoritesDao()))
+        val viewModel = TvDetailViewModel(api, FavoritesRepository(FakeFavoritesDao()), YoutubeStreamResolver())
 
         viewModel.loadShow(31)
 
@@ -186,7 +187,7 @@ class TvViewModelTest {
         val api = FakeTmdbApi().apply {
             tvShowDetailsResult = Result.failure(Throwable())
         }
-        val viewModel = TvDetailViewModel(api, FavoritesRepository(FakeFavoritesDao()))
+        val viewModel = TvDetailViewModel(api, FavoritesRepository(FakeFavoritesDao()), YoutubeStreamResolver())
 
         viewModel.loadShow(31)
 
@@ -196,7 +197,7 @@ class TvViewModelTest {
     @Test
     fun tvDetailViewModel_ignoresFavoriteToggleWhenDetailIsNotLoaded() = runTest {
         val repository = FavoritesRepository(FakeFavoritesDao())
-        val viewModel = TvDetailViewModel(FakeTmdbApi(), repository)
+        val viewModel = TvDetailViewModel(FakeTmdbApi(), repository, YoutubeStreamResolver())
 
         viewModel.toggleFavorite()
 

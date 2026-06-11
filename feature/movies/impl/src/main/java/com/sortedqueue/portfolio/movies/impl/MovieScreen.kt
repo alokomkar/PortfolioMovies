@@ -50,7 +50,10 @@ data class MoviesUiState(
 data class MovieDetailUiState(
     val isLoading: Boolean = true,
     val detail: MediaDetail? = null,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    val videos: List<com.sortedqueue.portfolio.core.network.TmdbVideoDto> = emptyList(),
+    val isResolving: Boolean = false,
+    val resolvedPlaylist: List<VideoItem> = emptyList()
 )
 
 @HiltViewModel
@@ -100,7 +103,8 @@ class MoviesViewModel @Inject constructor(
 @HiltViewModel
 class MovieDetailViewModel @Inject constructor(
     private val tmdbApi: TmdbApi,
-    private val favoritesRepository: FavoritesRepository
+    private val favoritesRepository: FavoritesRepository,
+    private val youtubeStreamResolver: com.sortedqueue.portfolio.core.network.YoutubeStreamResolver
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(MovieDetailUiState())
     val uiState: StateFlow<MovieDetailUiState> = _uiState
@@ -113,21 +117,64 @@ class MovieDetailViewModel @Inject constructor(
 
         viewModelScope.launch {
             _uiState.value = MovieDetailUiState(isLoading = true)
-            runCatching { tmdbApi.movieDetails(movieId).toMediaDetail() }
-                .onSuccess { detail ->
-                    _uiState.value = MovieDetailUiState(isLoading = false, detail = detail)
-                    favoritesRepository.observeIsFavorite(movieId, MediaType.Movie).collect { isFavorite ->
-                        _uiState.update { state ->
-                            state.copy(detail = state.detail?.copy(isFavorite = isFavorite))
-                        }
+            val detailsResult = runCatching { tmdbApi.movieDetails(movieId).toMediaDetail() }
+            val videosResult = runCatching { tmdbApi.movieVideos(movieId).results }
+            
+            if (detailsResult.isSuccess) {
+                val detail = detailsResult.getOrThrow()
+                val videos = videosResult.getOrDefault(emptyList())
+                _uiState.value = MovieDetailUiState(
+                    isLoading = false,
+                    detail = detail,
+                    videos = videos
+                )
+                favoritesRepository.observeIsFavorite(movieId, MediaType.Movie).collect { isFavorite ->
+                    _uiState.update { state ->
+                        state.copy(detail = state.detail?.copy(isFavorite = isFavorite))
                     }
                 }
-                .onFailure { error ->
-                    _uiState.value = MovieDetailUiState(
-                        isLoading = false,
-                        errorMessage = error.message ?: "Unable to load movie details"
-                    )
+            } else {
+                val error = detailsResult.exceptionOrNull()
+                _uiState.value = MovieDetailUiState(
+                    isLoading = false,
+                    errorMessage = error?.message ?: "Unable to load movie details"
+                )
+            }
+        }
+    }
+
+    fun resolveTrailers(onResolved: (List<VideoItem>) -> Unit) {
+        val videos = _uiState.value.videos.filter { it.site == "YouTube" && it.type == "Trailer" }
+        if (videos.isEmpty()) {
+            onResolved(listOf(
+                VideoItem(
+                    url = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+                    title = "${_uiState.value.detail?.title ?: "Movie"} - Fallback Trailer",
+                    subtitle = "No trailers found on TMDB"
+                )
+            ))
+            return
+        }
+
+        viewModelScope.launch {
+            _uiState.update { it.copy(isResolving = true) }
+            val resolved = mutableListOf<VideoItem>()
+            for (video in videos) {
+                val title = video.name ?: "Official Trailer"
+                val subtitle = "Source: ${video.site ?: "YouTube"} (${video.size ?: 720}p)"
+                val resolvedUrl = youtubeStreamResolver.resolveStreamUrl(video.key)
+                if (resolvedUrl != null) {
+                    resolved.add(VideoItem(url = resolvedUrl, title = title, subtitle = subtitle))
+                } else {
+                    resolved.add(VideoItem(
+                        url = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+                        title = "$title (Fallback Stream)",
+                        subtitle = subtitle
+                    ))
                 }
+            }
+            _uiState.update { it.copy(isResolving = false, resolvedPlaylist = resolved) }
+            onResolved(resolved)
         }
     }
 
@@ -172,7 +219,7 @@ fun MovieDetailScreen(
     var activePlaylist by remember { mutableStateOf<ImmutableList<VideoItem>?>(null) }
 
     when {
-        state.isLoading -> LoadingState()
+        state.isLoading || state.isResolving -> LoadingState()
         state.errorMessage != null -> ErrorState(message = state.errorMessage, onRetry = { viewModel.loadMovie(movieId) })
         activePlaylist != null -> VideoPlayerScreen(
             playlist = activePlaylist!!,
@@ -183,23 +230,9 @@ fun MovieDetailScreen(
             onBack = onBack,
             onFavoriteClick = viewModel::toggleFavorite,
             onPlayTrailers = {
-                activePlaylist = persistentListOf(
-                    VideoItem(
-                        url = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-                        title = "${state.detail.title} - Official Trailer 1",
-                        subtitle = "Duration: 10 mins"
-                    ),
-                    VideoItem(
-                        url = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
-                        title = "${state.detail.title} - Official Trailer 2",
-                        subtitle = "Duration: 10 mins"
-                    ),
-                    VideoItem(
-                        url = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-                        title = "${state.detail.title} - Teaser Clip",
-                        subtitle = "Duration: 15 secs"
-                    )
-                )
+                viewModel.resolveTrailers { playlist ->
+                    activePlaylist = playlist.toImmutableList()
+                }
             }
         )
     }
