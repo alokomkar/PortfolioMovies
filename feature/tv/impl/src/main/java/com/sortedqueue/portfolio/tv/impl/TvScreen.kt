@@ -100,11 +100,12 @@ class TvViewModel @Inject constructor(
     }
 }
 
+@Suppress("UnusedPrivateProperty")
 @HiltViewModel
 class TvDetailViewModel @Inject constructor(
     private val tmdbApi: TmdbApi,
     private val favoritesRepository: FavoritesRepository,
-    private val youtubeStreamResolver: com.sortedqueue.portfolio.core.network.YoutubeStreamResolver
+    youtubeStreamResolver: com.sortedqueue.portfolio.core.network.YoutubeStreamResolver
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(TvDetailUiState())
     val uiState: StateFlow<TvDetailUiState> = _uiState
@@ -156,26 +157,15 @@ class TvDetailViewModel @Inject constructor(
             return
         }
 
-        viewModelScope.launch {
-            _uiState.update { it.copy(isResolving = true) }
-            val resolved = mutableListOf<VideoItem>()
-            for (video in videos) {
-                val title = video.name ?: "Official Trailer"
-                val subtitle = "Source: ${video.site ?: "YouTube"} (${video.size ?: 720}p)"
-                val resolvedUrl = youtubeStreamResolver.resolveStreamUrl(video.key)
-                if (resolvedUrl != null) {
-                    resolved.add(VideoItem(url = resolvedUrl, title = title, subtitle = subtitle))
-                } else {
-                    resolved.add(VideoItem(
-                        url = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-                        title = "$title (Fallback Stream)",
-                        subtitle = subtitle
-                    ))
-                }
-            }
-            _uiState.update { it.copy(isResolving = false, resolvedPlaylist = resolved) }
-            onResolved(resolved)
+        val resolved = videos.map { video ->
+            VideoItem(
+                url = "https://www.youtube.com/watch?v=${video.key}",
+                title = video.name ?: "Official Trailer",
+                subtitle = "Source: ${video.site ?: "YouTube"} (${video.size ?: 720}p)"
+            )
         }
+        _uiState.update { it.copy(resolvedPlaylist = resolved) }
+        onResolved(resolved)
     }
 
     fun toggleFavorite() {
