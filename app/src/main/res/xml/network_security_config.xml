@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- 1. Enforce HTTPS globally across all connections in production -->
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+
+    <!-- 2. Configure TMDB API Certificate Pinning -->
+    <domain-config>
+        <domain includeSubdomains="true">api.themoviedb.org</domain>
+        <pin-set expiration="2027-01-01">
+            <!-- Leaf Certificate -->
+            <pin digest="SHA-256">QfyoR20v8hyYX7L+ikLzM/euPGSDl67gFFcor/sROMs=</pin>
+            <!-- Intermediate CA (Amazon RSA 2048 M04) -->
+            <pin digest="SHA-256">G9LNNAql897egYsabashkzUCTEJkWBzgoEtk8X/678c=</pin>
+            <!-- Root CA (Amazon Root CA 1) -->
+            <pin digest="SHA-256">++MBgDH5WGvL9Bcn5Be30cRcL0f5O+NyoXuWtQdX1aI=</pin>
+        </pin-set>
+    </domain-config>
+
+    <!-- 3. Configure TMDB Image CDN Certificate Pinning -->
+    <domain-config>
+        <domain includeSubdomains="true">image.themoviedb.org</domain>
+        <domain includeSubdomains="true">image.tmdb.org</domain>
+        <pin-set expiration="2027-01-01">
+            <!-- Leaf Certificate -->
+            <pin digest="SHA-256">D9+FUQAcRTKvnv4RFbvEOfxIdAaqGJVOtOKBUZPFlak=</pin>
+            <!-- Intermediate (Fastly) -->
+            <pin digest="SHA-256">LoMHBotttiDko50Gi13uXW71eIy7LAttI+rYT8wXF4w=</pin>
+            <!-- Root CA -->
+            <pin digest="SHA-256">fk6IOKit1ild5647BH06ujSIq5XbCgqlbYl6ANhhi88=</pin>
+        </pin-set>
+    </domain-config>
+</network-security-config>

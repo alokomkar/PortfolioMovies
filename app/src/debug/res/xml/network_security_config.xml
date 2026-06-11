@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- Allow cleartext traffic in debug builds for mock servers, Chucker, or proxying -->
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <!-- Trust system-installed certificates -->
+            <certificates src="system" />
+            <!-- Trust user-installed certificates for SSL packet inspection tools -->
+            <certificates src="user" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>
