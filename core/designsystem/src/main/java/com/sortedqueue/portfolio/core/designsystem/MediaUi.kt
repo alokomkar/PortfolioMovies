@@ -138,6 +138,7 @@ fun MediaDetailContent(
     detail: MediaDetail,
     onBack: () -> Unit,
     onFavoriteClick: () -> Unit,
+    onPlayTrailers: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -210,6 +211,15 @@ fun MediaDetailContent(
             if (detail.genres.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(text = detail.genres.joinToString(" • "), style = MaterialTheme.typography.bodyMedium)
+            }
+            onPlayTrailers?.let {
+                Spacer(modifier = Modifier.height(16.dp))
+                Button(
+                    onClick = it,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("▶ Watch Trailers")
+                }
             }
             Spacer(modifier = Modifier.height(20.dp))
             Text(text = detail.overview, style = MaterialTheme.typography.bodyLarge)

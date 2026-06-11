@@ -30,6 +30,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import com.sortedqueue.portfolio.player.VideoItem
+import com.sortedqueue.portfolio.player.VideoPlayerScreen
+
 
 data class TvUiState(
     val isLoading: Boolean = true,
@@ -159,13 +166,38 @@ fun TvDetailScreen(
     }
 
     val state = viewModel.uiState.collectAsStateWithLifecycle().value
+    var activePlaylist by remember { mutableStateOf<List<VideoItem>?>(null) }
+
     when {
         state.isLoading -> LoadingState()
         state.errorMessage != null -> ErrorState(message = state.errorMessage, onRetry = { viewModel.loadShow(tvId) })
+        activePlaylist != null -> VideoPlayerScreen(
+            playlist = activePlaylist!!,
+            onBack = { activePlaylist = null }
+        )
         state.detail != null -> MediaDetailContent(
             detail = state.detail,
             onBack = onBack,
-            onFavoriteClick = viewModel::toggleFavorite
+            onFavoriteClick = viewModel::toggleFavorite,
+            onPlayTrailers = {
+                activePlaylist = listOf(
+                    VideoItem(
+                        url = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+                        title = "${state.detail.title} - Official Trailer 1",
+                        subtitle = "Duration: 10 mins"
+                    ),
+                    VideoItem(
+                        url = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+                        title = "${state.detail.title} - Official Trailer 2",
+                        subtitle = "Duration: 10 mins"
+                    ),
+                    VideoItem(
+                        url = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+                        title = "${state.detail.title} - Teaser Clip",
+                        subtitle = "Duration: 15 secs"
+                    )
+                )
+            }
         )
     }
 }

@@ -33,3 +33,5 @@ include(":feature:movies:impl")
 include(":feature:tv:impl")
 include(":feature:favorites:impl")
 include(":app-ui")
+include(":player")
+

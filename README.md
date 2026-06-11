@@ -50,9 +50,15 @@ Mermaid diagrams are available under `docs/diagrams`:
 ## Contributor Docs
 
 - [Architecture Decision Records](docs/adr/README.md): rationale for the major architecture choices
+- [Build Infrastructure & Multi-Module Architecture](docs/build-infrastructure/README.md): custom Gradle Convention Plugins, version catalogs, and dependency analysis tooling
+- [CI/CD & Automation Pipelines](docs/ci-cd-automation/README.md): matrix testing with GMD, static analysis (Detekt/Lint), and automated Fastlane releases
 - [CI Pipeline](docs/ci.md): GitHub Actions checks, required secrets, and uploaded reports
+- [Jetpack Compose Platform Architecture](docs/compose-architecture/README.md): Compose compiler metrics and custom design system themes
 - [Libraries](docs/libraries.md): dependency list, purpose of each library, and version management
 - [Production Readiness](docs/production-readiness.md): current strengths, known limits, and next investments
+- [Production Telemetry & Observability](docs/telemetry-observability/README.md): cold start tracking, jank analytics (Frame Metrics API), and remote feature flagging
+- [Reusable Media Player Module](docs/player/README.md): Jetpack Media3 ExoPlayer wrapper with custom Compose controls and playlist queueing
+- [Security & Compliance Guardrails](docs/security-compliance/README.md): R8/ProGuard rules, Network Security Configs, and vulnerability scanning
 - [Testing Guide](docs/testing.md): test structure, examples, and coverage scope
 
 ## Modules
@@ -74,6 +80,7 @@ PortfolioMovies/
 │   │   └── impl/                # Movies list/detail screens and ViewModels
 │   └── tv/
 │       └── impl/                # TV list/detail screens and ViewModels
+├── player/                      # Reusable Media3 ExoPlayer library module with Compose controls
 ├── gradle/                      # Gradle wrapper and version catalog
 ├── build.gradle.kts             # Root plugins and Jacoco report task
 ├── settings.gradle.kts          # Module registration
