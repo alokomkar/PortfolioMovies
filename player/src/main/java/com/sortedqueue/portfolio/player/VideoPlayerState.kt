@@ -42,10 +42,26 @@ class VideoPlayerState(
     var duration by mutableLongStateOf(0L)
         internal set
 
+    private fun checkYoutubePlayback() {
+        val currentVideo = playlist.getOrNull(currentItemIndex)
+        val isYoutube = currentVideo?.url?.let {
+            it.contains("youtube.com") || it.contains("youtu.be")
+        } == true
+        if (isYoutube && player.isPlaying) {
+            player.pause()
+        }
+    }
+
     init {
         val mediaItems = playlist.map { video ->
+            val isYoutube = video.url.contains("youtube.com") || video.url.contains("youtu.be")
+            val playUrl = if (isYoutube) {
+                "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+            } else {
+                video.url
+            }
             MediaItem.Builder()
-                .setUri(video.url)
+                .setUri(playUrl)
                 .setMediaId(video.url)
                 .setMediaMetadata(
                     MediaMetadata.Builder()
@@ -58,10 +74,12 @@ class VideoPlayerState(
         player.setMediaItems(mediaItems)
         player.prepare()
         player.playWhenReady = true
+        checkYoutubePlayback()
 
         player.addListener(object : Player.Listener {
             override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
                 currentItemIndex = player.currentMediaItemIndex
+                checkYoutubePlayback()
             }
 
             override fun onIsPlayingChanged(isPlayingChanged: Boolean) {
@@ -97,7 +115,13 @@ class VideoPlayerState(
     }
 
     fun play() {
-        player.play()
+        val currentVideo = playlist.getOrNull(currentItemIndex)
+        val isYoutube = currentVideo?.url?.let {
+            it.contains("youtube.com") || it.contains("youtu.be")
+        } == true
+        if (!isYoutube) {
+            player.play()
+        }
     }
 
     fun pause() {
@@ -134,7 +158,15 @@ class VideoPlayerState(
     fun playAtIndex(index: Int) {
         if (index in playlist.indices) {
             player.seekTo(index, 0L)
-            player.play()
+            val currentVideo = playlist.getOrNull(index)
+            val isYoutube = currentVideo?.url?.let {
+                it.contains("youtube.com") || it.contains("youtu.be")
+            } == true
+            if (!isYoutube) {
+                player.play()
+            } else {
+                player.pause()
+            }
         }
     }
 
